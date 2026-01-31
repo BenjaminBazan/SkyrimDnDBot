@@ -1,9 +1,9 @@
-﻿
+
 
 using System;
 using Discord.WebSocket;
 
-namespace SkyrimDnDBot.Commands;
+namespace SkyrimDnDBot.Application.Commands;
 
 public sealed class CommandRouter
 {
@@ -48,6 +48,7 @@ public sealed class CommandRouter
         return $"Available commands:\n" +
                $"{_prefix}que - no se sabe (? )'\n" +
                $"{_prefix}hello - Saludiño \n" +
-               $"{_prefix}help - Lista de lo que si hice";
-    }   
+               $"{_prefix}help - Muestra un menu con todo";
+    }
+
 }

@@ -1,6 +1,6 @@
-﻿using System;
+using System;
 
-namespace SkyrimDnDBot.Commands;
+namespace SkyrimDnDBot.Application.Commands;
 
 
 public static class CommandParser

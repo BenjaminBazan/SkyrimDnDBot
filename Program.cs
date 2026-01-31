@@ -1,7 +1,7 @@
 // See https://aka.ms/new-console-template for more information
 using Discord;
 using Discord.WebSocket;
-using SkyrimDnDBot.Commands;
+using SkyrimDnDBot.Application.Commands;
 
 class Program
 {
