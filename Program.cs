@@ -2,6 +2,9 @@
 using Discord;
 using Discord.WebSocket;
 using SkyrimDnDBot.Application.Commands;
+using SkyrimDnDBot.Application.Commands.Handlers;
+using SkyrimDnDBot.Application.Commands.Interfaces;
+using SkyrimDnDBot.Infrastructure.Discord;
 
 class Program
 {
@@ -16,7 +19,13 @@ class Program
         {
             GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
         });
-         _commandRouter = new CommandRouter('%');
+        var prefix = '%';
+        var handlers = new ICommandHandler[]
+        {
+            new PingHandler(),
+            new HelpHandler(prefix)
+        };
+        _commandRouter = new CommandRouter(prefix, handlers);
         _client.Log += Log;
         _client.MessageReceived += MessageReceived;
 
@@ -38,6 +47,7 @@ class Program
 
     private async Task MessageReceived(SocketMessage message)
     {
-        await _commandRouter.RouteAsync(message);
+        var chatMessage = new DiscordChatMessage(message);
+        await _commandRouter.RouteAsync(chatMessage);
     }
 }

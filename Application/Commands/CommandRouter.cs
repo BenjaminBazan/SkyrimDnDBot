@@ -1,22 +1,22 @@
-
-
-using System;
-using Discord.WebSocket;
+using SkyrimDnDBot.Application.Commands.Interfaces;
+using SkyrimDnDBot.Core.Interfaces;
 
 namespace SkyrimDnDBot.Application.Commands;
 
 public sealed class CommandRouter
 {
     private readonly char _prefix;
+    private readonly Dictionary<string, ICommandHandler> _handlers;
 
-    public CommandRouter(char prefix)
+    public CommandRouter(char prefix, IEnumerable<ICommandHandler> handlers)
     {
         _prefix = prefix;
+        _handlers = handlers.ToDictionary(h => h.Name, h => h, StringComparer.OrdinalIgnoreCase);
     }
 
-    public async Task RouteAsync(SocketMessage message)
+    public async Task RouteAsync(IChatMessage message)
     {
-        if (message.Author.IsBot)
+        if (message.IsFromBot)
             return;
         
         var parsedCommand = CommandParser.TryParse(message.Content, _prefix);
@@ -24,31 +24,15 @@ public sealed class CommandRouter
         if (parsedCommand is null)
             return;
         
-        switch (parsedCommand.Name)
+        if (_handlers.TryGetValue(parsedCommand.Name, out var handler))
         {
-            case "que":
-                await message.Channel.SendMessageAsync("so! JAJAJAJ (?)");
-                break;
-            case "hello":
-                await message.Channel.SendMessageAsync($"Kuibo prro, wenas {message.Author.Mention}!");
-                break;
-            case "help" :
-                var helpText = GetHelpText();
-                await message.Channel.SendMessageAsync(helpText);
-                break;     
-            default:
-                await message.Channel.SendMessageAsync($"Aun no hice este comando, da paja: {parsedCommand.Name}");
-                break;
-
+            await handler.HandleAsync(message, parsedCommand);
+            return;
+        }
+        else
+        {
+            await message.ReplyAsync($"Unknown command '{parsedCommand.Name}'. Type '{_prefix}help' for a list of commands.");
+            return;
         }
     }
-
-    private string GetHelpText()
-    {
-        return $"Available commands:\n" +
-               $"{_prefix}que - no se sabe (? )'\n" +
-               $"{_prefix}hello - Saludiño \n" +
-               $"{_prefix}help - Muestra un menu con todo";
-    }
-
 }
