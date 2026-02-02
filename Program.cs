@@ -4,7 +4,9 @@ using Discord.WebSocket;
 using SkyrimDnDBot.Application.Commands;
 using SkyrimDnDBot.Application.Commands.Handlers;
 using SkyrimDnDBot.Application.Commands.Interfaces;
+using SkyrimDnDBot.Application.Services;
 using SkyrimDnDBot.Infrastructure.Discord;
+using SkyrimDnDBot.Infrastructure.Persistence;
 
 class Program
 {
@@ -20,10 +22,14 @@ class Program
             GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages | GatewayIntents.MessageContent
         });
         var prefix = '%';
+        var characterRepo = new InMemoryCharacterRepository();
+        var characterService = new CharacterService(characterRepo);
+        
         var handlers = new ICommandHandler[]
         {
             new PingHandler(),
-            new HelpHandler(prefix)
+            new HelpHandler(prefix),
+            new CharacterHandler(prefix, characterService)
         };
         _commandRouter = new CommandRouter(prefix, handlers);
         _client.Log += Log;
