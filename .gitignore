@@ -482,3 +482,8 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+# ⚠️ SEGURIDAD: Nunca subas archivos con secretos reales
+appsettings.Development.json
+appsettings.Production.json
+*.secrets.json
